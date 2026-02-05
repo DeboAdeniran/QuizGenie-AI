@@ -2,7 +2,14 @@ import spacy
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
-from rake_nltk import Rake
+
+# Try to import rake_nltk, but provide fallback if not available
+try:
+    from rake_nltk import Rake
+    RAKE_AVAILABLE = True
+except ImportError:
+    RAKE_AVAILABLE = False
+    
 import textstat
 from collections import Counter
 import re
@@ -44,7 +51,15 @@ class TextProcessor:
             self.nlp = spacy.load(spacy_model)
         
         self.stop_words = set(stopwords.words('english'))
-        self.rake = Rake()
+        
+        # Initialize RAKE if available, otherwise use fallback
+        if RAKE_AVAILABLE:
+            self.rake = Rake()
+            logger.info("TextProcessor initialized with RAKE support")
+        else:
+            self.rake = None
+            logger.warning("RAKE not available - using fallback keyword extraction")
+            
         logger.info("TextProcessor initialized successfully")
     
     def is_ready(self) -> bool:
@@ -222,17 +237,36 @@ class TextProcessor:
         return topics
     
     def _extract_key_phrases(self, text: str, max_phrases: int = 15) -> List[str]:
-        """Extract key phrases using RAKE"""
-        self.rake.extract_keywords_from_text(text)
-        phrases = self.rake.get_ranked_phrases()
-        
-        # Filter and clean phrases
-        filtered_phrases = []
-        for phrase in phrases[:max_phrases]:
-            if 2 <= len(phrase.split()) <= 5:  # Reasonable phrase length
-                filtered_phrases.append(phrase.title())
-        
-        return filtered_phrases
+        """Extract key phrases using RAKE or fallback method"""
+        if self.rake is not None:
+            # Use RAKE if available
+            self.rake.extract_keywords_from_text(text)
+            phrases = self.rake.get_ranked_phrases()
+            
+            # Filter and clean phrases
+            filtered_phrases = []
+            for phrase in phrases[:max_phrases]:
+                if 2 <= len(phrase.split()) <= 5:  # Reasonable phrase length
+                    filtered_phrases.append(phrase.title())
+            
+            return filtered_phrases
+        else:
+            # Fallback: Use spaCy noun chunks
+            doc = self.nlp(text)
+            phrases = []
+            seen = set()
+            
+            for chunk in doc.noun_chunks:
+                phrase = chunk.text.lower().strip()
+                # Filter out short phrases and duplicates
+                if 2 <= len(phrase.split()) <= 5 and phrase not in seen:
+                    phrases.append(phrase.title())
+                    seen.add(phrase)
+                    
+                if len(phrases) >= max_phrases:
+                    break
+            
+            return phrases
     
     def _analyze_sentiment(self, doc: spacy.tokens.Doc) -> Dict[str, float]:
         """Basic sentiment analysis"""

@@ -13,17 +13,11 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python packages in order
-# 1. Install core dependencies first
+# Install Python packages
+# Install core dependencies first
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# 2. Install nltk first (required by rake-nltk)
-RUN pip install --no-cache-dir nltk==3.8.1
-
-# 3. Install rake-nltk after nltk
-RUN pip install --no-cache-dir rake-nltk==1.0.4
-
-# 4. Install remaining dependencies
+# Install all packages from requirements.txt (proper order is defined there)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Download NLTK data

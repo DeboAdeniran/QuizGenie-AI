@@ -4,11 +4,10 @@ uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 pydantic==2.5.0
 
-# NLTK (must be installed before rake-nltk)
+# NLTK
 nltk==3.8.1
 
-# NLP packages that depend on nltk
-rake-nltk==1.0.4
+# NLP packages
 textstat==0.7.3
 
 # spaCy
