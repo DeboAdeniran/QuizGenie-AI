@@ -13,9 +13,10 @@ textstat==0.7.3
 # spaCy
 spacy==3.7.2
 
-# Sentence transformers and dependencies
-sentence-transformers==2.2.2
+# Sentence transformers and dependencies - FIXED VERSION COMPATIBILITY
+sentence-transformers==2.7.0
 transformers==4.36.0
+huggingface_hub==0.23.0
 
 # PyTorch (CPU version for smaller size)
 torch==2.1.0
