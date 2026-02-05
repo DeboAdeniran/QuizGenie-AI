@@ -23,9 +23,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Download NLTK data
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('punkt_tab')"
 
-# Download smaller spaCy model (en_core_web_sm instead of en_core_web_lg)
-# This reduces memory usage significantly
-RUN python -m spacy download en_core_web_sm
+# Download spaCy model using pip (more reliable than spacy download)
+RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 
 # Copy application code
 COPY . .
