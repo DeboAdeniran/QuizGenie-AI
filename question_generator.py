@@ -7,7 +7,6 @@ from typing import List, Dict, Any, Optional, Set, Tuple
 from collections import Counter, defaultdict
 import time
 from loguru import logger
-from sentence_transformers import SentenceTransformer
 import numpy as np
 
 class ImprovedQuestionGenerator:
@@ -20,15 +19,14 @@ class ImprovedQuestionGenerator:
         """Initialize the question generator"""
         try:
             self.nlp = spacy.load(spacy_model)
-            self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
-            logger.info("✅ Enhanced ImprovedQuestionGenerator initialized successfully")
+            logger.info("✅ Enhanced ImprovedQuestionGenerator initialized (memory-optimized for free tier)")
         except Exception as e:
             logger.error(f"Error initializing ImprovedQuestionGenerator: {e}")
             raise
     
     def is_ready(self) -> bool:
         """Check if generator is ready"""
-        return self.nlp is not None and self.sentence_model is not None
+        return self.nlp is not None
     
     def generate(self,
                  text: str,
@@ -50,7 +48,7 @@ class ImprovedQuestionGenerator:
         # Build comprehensive knowledge base
         kb = self._build_knowledge_base(doc, text)
         
-        logger.info(f"📚 Knowledge Base Built:")
+        logger.info(f"ðŸ“š Knowledge Base Built:")
         logger.info(f"  - {len(kb['definitions'])} definitions")
         logger.info(f"  - {len(kb['key_concepts'])} key concepts")
         logger.info(f"  - {len(kb['processes'])} processes")
@@ -121,7 +119,7 @@ class ImprovedQuestionGenerator:
             if self._is_high_quality_question(q):
                 valid_questions.append(q)
         
-        logger.info(f"✅ Generated {len(valid_questions)} high-quality questions from {len(all_questions)} attempts")
+        logger.info(f"âœ… Generated {len(valid_questions)} high-quality questions from {len(all_questions)} attempts")
         
         # Select diverse questions
         final_questions = self._select_diverse_questions(valid_questions, num_questions)
@@ -1301,7 +1299,7 @@ class ImprovedQuestionGenerator:
                 
                 # Create correct sequence
                 correct_order = [seq['text'] for seq in sorted_seqs[:4]]
-                correct_answer = " → ".join([self._shorten_text(s, 40) for s in correct_order])
+                correct_answer = " â†’ ".join([self._shorten_text(s, 40) for s in correct_order])
                 
                 # Create scrambled versions as distractors
                 distractors = []
@@ -1309,7 +1307,7 @@ class ImprovedQuestionGenerator:
                     scrambled = correct_order.copy()
                     random.shuffle(scrambled)
                     if scrambled != correct_order:
-                        dist = " → ".join([self._shorten_text(s, 40) for s in scrambled])
+                        dist = " â†’ ".join([self._shorten_text(s, 40) for s in scrambled])
                         if dist not in distractors:
                             distractors.append(dist)
                 
@@ -1465,7 +1463,7 @@ class ImprovedQuestionGenerator:
     # ========== HELPER FUNCTIONS ==========
     
     def _generate_smart_distractors(self, correct_answer: str, kb: Dict, num: int) -> List[str]:
-        """Generate semantically plausible distractors"""
+        """Generate semantically plausible distractors (memory-optimized - no embeddings)"""
         distractors = []
         
         # Strategy 1: Use other definitions
@@ -1481,25 +1479,8 @@ class ImprovedQuestionGenerator:
                 if main_clause and main_clause not in distractors:
                     distractors.append(main_clause)
         
-        # Shuffle and select most different ones
+        # Shuffle and select (simple random selection)
         random.shuffle(distractors)
-        
-        # Use embeddings to select semantically different options
-        if len(distractors) > num:
-            all_options = [correct_answer] + distractors
-            embeddings = self.sentence_model.encode(all_options)
-            
-            selected = []
-            correct_emb = embeddings[0]
-            
-            for i in range(1, len(embeddings)):
-                similarity = np.dot(correct_emb, embeddings[i])
-                selected.append((distractors[i-1], similarity))
-            
-            # Sort by similarity (lower is more different)
-            selected.sort(key=lambda x: x[1])
-            distractors = [s[0] for s in selected[:num]]
-        
         return distractors[:num]
     
     def _format_as_option(self, text: str) -> str:

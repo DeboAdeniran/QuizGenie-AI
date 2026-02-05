@@ -13,15 +13,17 @@ textstat==0.7.3
 # spaCy
 spacy==3.7.2
 
-# Sentence transformers and dependencies - FIXED VERSION COMPATIBILITY
-sentence-transformers==2.7.0
-transformers==4.36.0
-huggingface_hub==0.23.0
+# MEMORY OPTIMIZED: Removed sentence-transformers (too heavy for 512MB free tier)
+# If you upgrade to paid plan, uncomment these:
+# sentence-transformers==2.7.0
+# transformers==4.36.0
+# huggingface_hub==0.23.0
 
-# PyTorch (CPU version for smaller size)
-torch==2.1.0
-torchvision==0.16.0
-torchaudio==2.1.0
+# PyTorch CPU - REMOVED to save memory
+# Uncomment if you need transformers or upgrade to paid plan:
+# torch==2.1.0
+# torchvision==0.16.0  
+# torchaudio==2.1.0
 
 # Document processing
 python-docx==1.1.0
