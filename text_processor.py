@@ -17,6 +17,7 @@ try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt')
+    nltk.download('punkt_tab')
     
 try:
     nltk.data.find('corpora/stopwords')
@@ -28,9 +29,10 @@ class TextProcessor:
     Handles all text processing, NLP analysis, and content extraction
     """
     
-    def __init__(self, spacy_model: str = "en_core_web_lg"):
+    def __init__(self, spacy_model: str = "en_core_web_sm"):
         """
         Initialize the text processor with spaCy and NLTK
+        Using en_core_web_sm for better deployment compatibility
         """
         try:
             self.nlp = spacy.load(spacy_model)

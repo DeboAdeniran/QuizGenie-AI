@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: quizgenie-ai
+    env: docker
+    plan: starter # or free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11
+    healthCheckPath: /health

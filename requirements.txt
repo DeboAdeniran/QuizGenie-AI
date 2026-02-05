@@ -1,33 +1,37 @@
-# requirements.txt - Fixed with proper installation order
-
-# 1. First install nltk (required by rake-nltk)
-nltk==3.8.1
-
-# 2. Core FastAPI
+# Core FastAPI dependencies
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 pydantic==2.5.0
 
-# 3. NLP packages that depend on nltk
+# NLTK (must be installed before rake-nltk)
+nltk==3.8.1
+
+# NLP packages that depend on nltk
 rake-nltk==1.0.4
 textstat==0.7.3
 
-# 4. spaCy and transformers
+# spaCy
 spacy==3.7.2
+
+# Sentence transformers and dependencies
 sentence-transformers==2.2.2
 transformers==4.36.0
 
-# 5. Document processing
+# PyTorch (CPU version for smaller size)
+torch==2.1.0
+torchvision==0.16.0
+torchaudio==2.1.0
+
+# Document processing
 python-docx==1.1.0
 PyPDF2==3.0.1
 
-# 6. Machine Learning
-torch==2.1.0
+# Machine Learning
 numpy==1.24.3
 scikit-learn==1.3.2
 
-# 7. Utilities
+# Utilities
 loguru==0.7.2
 aiofiles==23.2.1
 python-dotenv==1.0.0
