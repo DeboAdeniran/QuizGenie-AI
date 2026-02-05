@@ -1,29 +1,36 @@
-# Dockerfile
+# Dockerfile - Fixed with proper installation order
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# 2. Copy requirements first for better caching
 COPY requirements.txt .
+
+# 3. Install Python dependencies in two steps
+# First install nltk alone
+RUN pip install --no-cache-dir nltk==3.8.1
+
+# Then install the rest
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download NLTK data
+# 4. Download NLTK data
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 
-# Download spaCy model
-RUN python -c "import spacy; spacy.cli.download('en_core_web_lg')"
+# 5. Download spaCy model (use smaller model for memory efficiency)
+RUN python -c "import spacy; spacy.cli.download('en_core_web_sm')"
 
-# Copy application code
+# 6. Copy application code
 COPY . .
 
-# Expose port
+# 7. Expose port
 EXPOSE 8000
 
-# Command to run the application
+# 8. Command to run the application
 CMD ["python", "ai_server.py"]
