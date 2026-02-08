@@ -267,7 +267,7 @@ async def extract_topics(text: str, max_topics: int = 10):
 
 if __name__ == "__main__":
     # Get port from environment variable (Render provides PORT)
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 7860))
     
     logger.info("="*60)
     logger.info("🚀 Starting QuizGenie AI Service - Enhanced Edition")

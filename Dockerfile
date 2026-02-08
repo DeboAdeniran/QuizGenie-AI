@@ -33,7 +33,7 @@ COPY . .
 RUN mkdir -p logs
 
 # Expose port (Render will set PORT env variable)
-EXPOSE 8000
+EXPOSE 7860
 
 # Use exec form of CMD for proper signal handling
 CMD ["python", "-u", "ai_server.py"]
